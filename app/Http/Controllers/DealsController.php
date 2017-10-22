@@ -15,97 +15,100 @@ class DealsController extends Controller
         return view('deals.index',compact('members'));
     }
 
-    protected function create(array $data)
+    protected function store(array $data)
     {
 
+        //PRECISA PERMITIR COMPLETAR VÁRIAS VEZES A MESMA META
+
         $deal = Deals::create([
-            'idCustomer' => $data[''],
-            'idTypeTransactions' => $data[''],
+            'idCustomer' => $data['idCustomer'],
+            'idTypeTransactions' => $data['idTypeTransactions'],
             'amount' => $data['amount'],
         ]);
 
-        $customerGoals = DB::table('customer_goals')->get();
+        $customerGoals = DB::table('customer_goals')->where('id', "$data['idCustomer']")->get();
 
         foreach ($customerGoals as $customerGoal) {
+            $customerGoalsAmountRestrict;
             $goals = DB::table('goals')->get();
             foreach ($goals as $goal) {
                 $idRuleToRestrict = $goal->idRuleToRestrict;
-                $ruleToRestrict = DB::table('rules_to_restricts')->where('id', "$idRuleToRestrict");
+                $ruleToRestrict = DB::table('rules_to_restricts')->where('id', "$idRuleToRestrict")->first();
                 $lastDate = date_parse($customerGoal->updated_at);
                 $todays = date_parse($_SERVER['REQUEST_TIME']);
 
                 $restriction = $lastDate - $todays;
-                
+
                 if ($restriction >= $ruleToRestrict->amount) {
 
-                    $idRuleToAchieve = $goal->idRule
-                    $achieve = DB::table('rules_to_restricts')->where('id', "$idRuleToRestrict");
+                    $idRuleToAchieve = $goal->idRuleToAchieve;
+                    $achieve = DB::table('rules_to_achieves')->where('id', "$idRuleToAchieve")first();
+
+                    if ($achieve->gather) {
+                        if ($data['amount'] + $customerGoal->amountStored >= $achieve->amount) {
+                            $customerGoalsAmountRestrict = $customerGoal->amountRestrict + 1;
+                        }else{
+                            $customerGoalsAmountStored = $data['amount'];
+                        }
+                        DB::table('customer_goals')
+                            ->where('id', "$customerGoal->id")
+                            ->update(['amountRestrict' => "$customerGoalsAmountRestrict",
+                                    'amountStored' => "$customerGoalsAmountStored"
+                            ]);
+                    }else{
+                        if ($data['amount'] >= $achieve->amount) {
+                            $customerGoalsAmountRestrict = $customerGoal->amountRestrict + 1;
+                            DB::table('customer_goals')
+                            ->where('id', "$customerGoal->id")
+                            ->update(['amountRestrict' => $customerGoalsAmountRestrict,
+                            ]);
+                        }
+                    }
                 }
-            }
-
+            }           
         }
-        
-
+        return redirect()->route('deals.index')
+                            ->with('success','deals created successfully');
     }
 
     public function index()
     {
-        $members = Member::latest()->paginate(10);
-        return view('goals.index',compact('members'));
+        $members = Deal::latest()->paginate(10);
+        return view('deals.index',compact('members'));
     }
+
     //create
     protected function create()
     {
-        return view('Goals.create');
+        return view('deals.create');
     }
-    //store
-    protected function store(Request $request)
-    {
-            request()->validate([
-                'name' => $data['name'],
-                'idRuleToAchieve' => $data['idRuleToAchieve'],
-                'idRuleToRestrict' => $data['idRuleToRestrict'], 
-                'idRuleToAward'=> $data['idRuleToAward'],
-                'amount' => $data['amount'],
-            ]);
-            Goals::create($request->all());
-            return redirect()->route('goals.index')
-                            ->with('success','goals created successfully');
-        ]);
-    }
+
     //show
     protected function show($id)
     {
-        $members = Goals::find($id);
-        return view('goals.show',compact('members'));
+        $members = Deal::find($id);
+        return view('deals.show',compact('members'));
     }
     //edit
     public function edit($id)
     {
-        $members = Article::find($id);
-        return view('goals.edit',compact('members'));
+        $members = Deal::find($id);
+        return view('deals.edit',compact('members'));
     }
     //update
     public function update(Request $request, $id)
     {
-        request()->validate([
-            'name' => $data['name'],
-            'idRuleToAchieve' => $data['idRuleToAchieve'],
-            'idRuleToRestrict' => $data['idRuleToRestrict'], 
-            'idRuleToAward'=> $data['idRuleToAward'],
-            'amount' => $data['amount'],
-        ]);
-        Goals::find($id)->update($request->all());
-        return redirect()->route('goals.index')
-                        ->with('success','goals updated successfully');
+        Deal::find($id)->update($request->all());
+        return redirect()->route('deals.index')
+                        ->with('success','deals updated successfully');
     }
     //destroy
     protected function destroy($id)
     {
-        return Goals::destroy([
-            Goals::find($id)->delete();
-            return redirect()->route('goals.index')
-                            ->with('success','goals deleted successfully');
+        return Deal::destroy([
+            Deal::find($id)->delete();
+            return redirect()->route('deals.index')
+                            ->with('success','deals deleted successfully');
         ]);
     }
 }

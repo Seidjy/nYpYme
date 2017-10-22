@@ -10,7 +10,7 @@ class GoalsController extends Controller
     //index
     protected function index()
     {
-        $members = Member::latest()->paginate(10);
+        $members = Goals::latest()->paginate(10);
         return view('goals.index',compact('members'));
     }
     //create
@@ -21,17 +21,9 @@ class GoalsController extends Controller
      //store
     protected function store(Request $request)
     {
-            request()->validate([
-                'name' => $data['name'],
-                'idRuleToAchieve' => $data['idRuleToAchieve'],
-                'idRuleToRestrict' => $data['idRuleToRestrict'], 
-                'idRuleToAward'=> $data['idRuleToAward'],
-                'amount' => $data['amount'],
-            ]);
-            Goals::create($request->all());
-            return redirect()->route('goals.index')
-                            ->with('success','goals created successfully');
-        ]);
+        Goals::create($request->all());
+        return redirect()->route('goals.index')
+                ->with('success','goals created successfully');
     }
     //show
     protected function show($id)
@@ -48,13 +40,6 @@ class GoalsController extends Controller
     //update
     public function update(Request $request, $id)
     {
-        request()->validate([
-            'name' => $data['name'],
-            'idRuleToAchieve' => $data['idRuleToAchieve'],
-            'idRuleToRestrict' => $data['idRuleToRestrict'], 
-            'idRuleToAward'=> $data['idRuleToAward'],
-            'amount' => $data['amount'],
-        ]);
         Goals::find($id)->update($request->all());
         return redirect()->route('goals.index')
                         ->with('success','goals updated successfully');

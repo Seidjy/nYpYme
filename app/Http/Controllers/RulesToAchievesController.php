@@ -23,16 +23,10 @@ class RulesToAchievesController extends Controller
     //store
     protected function store(Request $request)
     {
-    	return RulesToAchieves::store([
-	        request()->validate([
-	            'name' => $data['name'],
-            	'idTypeAchieves' => $data['idTypeAchieves'],
-            	'amount' => $data['amount'],
-	        ]);
-	        RulesToAchieves::create($request->all());
-	        return redirect()->route('rulesToAchieves.index')
+        RulesToAchieves::create($request->all());
+            return redirect()->route('rulesToAchieves.index')
 	                        ->with('success','rulesToAchieves created successfully');
-	    ]);
+
 	}
     //show
     protected function show($id)
@@ -43,17 +37,12 @@ class RulesToAchievesController extends Controller
     //edit
     public function edit($id)
     {
-        $article = Article::find($id);
+        $article = RulesToAchieves::find($id);
         return view('rulesToAchieves.edit',compact('article'));
     }
     //update
     public function update(Request $request, $id)
     {
-        request()->validate([
-            'name' => $data['name'],
-            'idTypeAchieves' => $data['idTypeAchieves'],
-            'amount' => $data['amount'],
-        ]);
         RulesToAchieves::find($id)->update($request->all());
         return redirect()->route('rulesToAchieves.index')
                         ->with('success','rulesToAchieves updated successfully');
@@ -61,10 +50,9 @@ class RulesToAchievesController extends Controller
     //destroy
     protected function destroy($id)
     {
-    	return RulesToAchieves::destroy([
-	        RulesToAchieves::find($id)->delete();
+        RulesToAchieves::find($id)->delete();
 	        return redirect()->route('rulesToAchieves.index')
-	                        ->with('success','rulesToAchieves deleted successfully');
-        ]);
+	        ->with('success','rulesToAchieves deleted successfully');
+
     }
 }

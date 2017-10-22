@@ -9,10 +9,8 @@ class RulesToRestrictsController extends Controller
     //index
 	protected function index(array $data)
     {
-    	return RulesToRestricts::index([
-	        $data = RulesToRestricts::latest()->paginate(5);
-	        return view('rulesToRestricts.index',compact('articles'));
-	    ]);
+        $data = RulesToRestricts::latest()->paginate(5);
+        return view('rulesToRestricts.index',compact('articles'));
 	}
 	//create
     protected function create()
@@ -22,16 +20,10 @@ class RulesToRestrictsController extends Controller
     //store
     protected function store(Request $request)
     {
-    	return RulesToRestricts::store([
-	        request()->validate([
-	            'name' => $data['name'],
-            	'idTypeRestricts' => $data['idTypeRestricts'],
-            	'amount' => $data['amount'],
-	        ]);
 	        RulesToRestricts::create($request->all());
 	        return redirect()->route('rulesToRestricts.index')
 	                        ->with('success','rulesToRestricts created successfully');
-	    ]);
+
 	}
     //show
     protected function show($id)
@@ -42,17 +34,12 @@ class RulesToRestrictsController extends Controller
     //edit
     public function edit($id)
     {
-        $article = Article::find($id);
+        $article = RulesToRestricts::find($id);
         return view('rulesToRestricts.edit',compact('article'));
     }
     //update
     public function update(Request $request, $id)
     {
-        request()->validate([
-            'name' => $data['name'],
-            'idTypeRestricts' => $data['idTypeRestricts'],
-            'amount' => $data['amount'],
-        ]);
         RulesToRestricts::find($id)->update($request->all());
         return redirect()->route('rulesToRestricts.index')
                         ->with('success','rulesToRestricts updated successfully');

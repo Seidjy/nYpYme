@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::resource('deal','DealsController');
+
+Route::resource('goals','GoalsController');
+
+//Route::resource('deal','DealsController');
+
